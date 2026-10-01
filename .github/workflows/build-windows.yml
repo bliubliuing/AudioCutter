@@ -56,25 +56,41 @@ jobs:
           pip install torch --index-url https://download.pytorch.org/whl/cpu
           pip install silero-vad
 
+      - name: Download ffmpeg if missing (essentials build)
+        shell: pwsh
+        run: |
+          if (-not (Test-Path ffmpeg.exe)) {
+            $url = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip"
+            Invoke-WebRequest -Uri $url -OutFile ffmpeg.zip
+            Expand-Archive -Path ffmpeg.zip -DestinationPath ffmpeg_tmp
+            $dir = Get-ChildItem ffmpeg_tmp -Directory | Select-Object -First 1
+            Copy-Item "$($dir.FullName)/bin/ffmpeg.exe" -Destination .
+            Remove-Item ffmpeg.zip, ffmpeg_tmp -Recurse -Force
+          }
+
       - name: Build EXE (audio cutter)
         shell: pwsh
         run: |
           pyinstaller --onefile --windowed --name audio_cutter `
             --hidden-import torch `
             --collect-all silero_vad `
+            --collect-all PySide6.QtMultimedia `
             audio_cutter.py
+          Copy-Item ffmpeg.exe -Destination dist/
 
       - name: Upload artifact (每次构建都可在 Artifacts 下载)
         uses: actions/upload-artifact@v4
         with:
           name: audio-cutter-windows
-          path: dist/audio_cutter.exe
+          path: dist/
 
       - name: Release (仅 tag 触发时发布到 Releases)
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/audio_cutter.exe
+          files: |
+            dist/audio_cutter.exe
+            dist/ffmpeg.exe
 
       - name: Upload artifact (每次构建都可在 Artifacts 下载)
         uses: actions/upload-artifact@v4
