@@ -39,6 +39,43 @@ jobs:
           pyinstaller --onefile --windowed --name audiocutter audio_cutter.py
           Copy-Item ffmpeg.exe -Destination dist/
 
+  build-cutter:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies (audio_cutter)
+        run: |
+          pip install PySide6 pyqtgraph numpy pyinstaller
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install silero-vad
+
+      - name: Build EXE (audio cutter)
+        shell: pwsh
+        run: |
+          pyinstaller --onefile --windowed --name audio_cutter `
+            --hidden-import torch `
+            --collect-all silero_vad `
+            audio_cutter.py
+
+      - name: Upload artifact (每次构建都可在 Artifacts 下载)
+        uses: actions/upload-artifact@v4
+        with:
+          name: audio-cutter-windows
+          path: dist/audio_cutter.exe
+
+      - name: Release (仅 tag 触发时发布到 Releases)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/audio_cutter.exe
+
       - name: Upload artifact (每次构建都可在 Artifacts 下载)
         uses: actions/upload-artifact@v4
         with:
