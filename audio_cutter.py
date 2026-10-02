@@ -536,6 +536,13 @@ class MainWindow(QMainWindow):
         self.audio_path = path
         self.sr = sr
         self.duration = len(pcm) / sr
+        # 新音频 = 新会话：清空上一个音频的所有打轴状态
+        self.boundaries = []
+        self._excluded = set()
+        self._undo_stack = []
+        self.project_path = None
+        self.wave.clear_candidates()   # 候选虚线引用归零（边界线由 set_wave 清）
+        self._refresh_segments()       # 片段列表清空重建
         self.wave.set_wave(pcm, sr)
         self.player.setSource(QUrl.fromLocalFile(str(Path(path).resolve())))
         self.setWindowTitle(f"音频裁切 · {Path(path).name}")
