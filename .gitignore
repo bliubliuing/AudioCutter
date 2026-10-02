@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+.venv/
+
+# PyInstaller 打包产物
+build/
+dist/
+*.spec
+
+# AtomCode
+.atomcode/
+
+# 项目数据与产出
+output/
+versions/
+ffmpeg.exe
+书/
+音视频/
