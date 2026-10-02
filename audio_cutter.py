@@ -131,7 +131,12 @@ class CandidateWorker(QThread):
             return
         try:
             x = self._load_wav_16k(self.audio_path)
-            model = load_silero_vad()
+            # 用字节流加载 jit 模型：torch.jit.load 对文件路径走 ANSI fopen，
+            # 中文用户名（如 c:\users\黄芪\...）会导致 errno 2，BytesIO 则无此问题
+            import io
+            from importlib import resources
+            jit_bytes = resources.files("silero_vad.data").joinpath("silero_vad.jit").read_bytes()
+            model = torch.jit.load(io.BytesIO(jit_bytes), map_location="cpu")
             # 逐帧概率：30ms 窗 / 10ms hop（10ms 网格）
             hop = 160
             probs = []
