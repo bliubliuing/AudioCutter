@@ -77,7 +77,7 @@ pyinstaller --onefile --windowed --name audio_cutter
   --collect-binaries silero_vad
   --collect-all PySide6.QtMultimedia  # 播放器后端 DLL
 ```
-- **ffmpeg 不打包不分发**：用户自备并加入 PATH（README 已写明）。
+- **ffmpeg 不打包进 exe**（避免体积暴涨），但以 **ffmpeg.exe 附件形式随 Release 分发**（v6.3.6 起），用户与主程序放同一目录即可；打包策略变更时注意同步更新 README。
 - 若未来加新依赖：先本地打包验证，再动 workflow。
 
 ## 四、版本记录

@@ -45,20 +45,22 @@
 
 ## 二、Windows 使用（exe）
 
-### 准备两样东西
+### 准备两样东西（都在 [Releases](../../releases) 最新版附件里，一站下齐）
 
-1. **audio_cutter.exe**：从 [Releases](../../releases) 下载最新版（v6.3.x）；
-2. **ffmpeg**：**本工具不附带，需自备**——去 [ffmpeg 官网](https://ffmpeg.org/download.html) 或 `winget install ffmpeg` 安装，并确保命令行里能直接运行 `ffmpeg`（即已加入 PATH）。
+1. **audio_cutter.exe**：主程序；
+2. **ffmpeg.exe**：解码/切分/导出必备，工具本身不附带——从同一 Release 页下载，和 `audio_cutter.exe` 放**同一目录**即可（无需安装、无需配 PATH）。
+
+> 也可自行安装系统级 ffmpeg（[官网](https://ffmpeg.org/download.html) 或 `winget install ffmpeg`），此时无需单独下载 ffmpeg.exe。
 
 ### 运行
 
-双击 `audio_cutter.exe` 即可。解码、切分、VAD 全都通过调用 ffmpeg 完成，所以 ffmpeg 必须先装好。
+双击 `audio_cutter.exe` 即可。解码、切分、VAD 全都通过调用 ffmpeg 完成，所以同目录必须有 ffmpeg.exe（或系统已装 ffmpeg）。
 
 ### 常见问题
 
 | 现象 | 原因与解决 |
 |---|---|
-| 提示找不到 ffmpeg / 解码失败 | ffmpeg 未安装或未加入 PATH，重装并确认命令行可用 |
+| 提示找不到 ffmpeg / 解码失败 | 未下载 ffmpeg.exe 或没和主程序放同一目录；二者必须在同一文件夹 |
 | 打开音频后无法播放 | 播放走系统解码器，与 ffmpeg 无关；换 mp3/wav 格式试试 |
 | VAD 候选报错 | silero 模型已打包在 exe 内；若仍失败会自动降级能量兜底，功能不受影响 |
 
